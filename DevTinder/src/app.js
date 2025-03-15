@@ -2,25 +2,20 @@ const express = require("express");
 const connectDB = require("./config/database");
 const User = require("./models/users");
 const app = express();
+const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const {authRouter} = require("./routes/auth");
+const {profileRouter} = require("./routes/profile");
+const {userRouter} = require("./routes/user");
+const {connectionRequestRouter} = require("./routes/request");
 
-app.post("/v1/signup", (req, res) => {
-    const test = new User({
-        firstName: "Dhruv",
-        lastName: "Kotwani",
-        emailId: "dhruvkotwani@gmail.com",
-        password: "123456",
-        age: 24,
-        gender: "male"
-    });
-    test.save()
-    .then(() => {
-        res.send(`User ${test.firstName} added successfully`);
-    })
-    .catch((err) => {
-        res.status(500).send("Failed to add user" + err);
-    }
-    );
-})
+app.use(express.json());
+app.use(cookieParser());
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", userRouter);
+app.use("/", connectionRequestRouter);
 
 connectDB()
 .then(() => {
